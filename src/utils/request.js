@@ -17,8 +17,6 @@ service.interceptors.request.use(
 
     if (store.getters.token) {
       config.headers['token'] = getToken()
-      config.headers['Access-Control-Allow-Origin'] = '*'
-      config.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, PATCH, DELETE'
     }
     return config
   },
