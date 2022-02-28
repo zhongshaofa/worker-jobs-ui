@@ -74,7 +74,7 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+          <el-button v-if="row.status!='启用'" size="mini" type="success" @click="handleModifyStatus(row,'启用')">
             Publish
           </el-button>
           <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
@@ -91,26 +91,21 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Type" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-          </el-select>
+        <el-form-item label="应用名称">
+          <el-input v-model="temp.app_name" />
         </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        <el-form-item label="应用编码">
+          <el-input v-model="temp.app_code" />
         </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
+        <el-form-item label="应用简介">
+          <el-input v-model="temp.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item label="Remark">
+        <el-form-item label="备注信息">
           <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
         </el-form-item>
       </el-form>
@@ -162,9 +157,8 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 0,
-        draft: 1,
-        deleted: 2
+        enable: 1,
+        disabled: 2
       }
       return statusMap[status]
     },
@@ -189,16 +183,15 @@ export default {
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
+      statusOptions: ['启用', '禁用'],
       showReviewer: false,
       temp: {
         id: undefined,
-        importance: 1,
         remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
+        app_code: '',
+        app_name: '',
+        introduction: '',
+        status: '启用'
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -263,12 +256,11 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        importance: 1,
         remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
+        app_code: '',
+        app_name: '',
+        introduction: '',
+        status: '启用'
       }
     },
     handleCreate() {
@@ -282,8 +274,6 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
           add(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
