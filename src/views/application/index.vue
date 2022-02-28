@@ -40,24 +40,24 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应用编码" width="110px" align="center">
+      <el-table-column label="应用编码" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.app_code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应用名称" width="110px" align="center">
+      <el-table-column label="应用名称" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.app_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="系统简介" width="110px" align="center">
+      <el-table-column label="系统简介" width="300px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.introduction }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="150px" align="center">
+      <el-table-column label="更新时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.updated_at}}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" width="100">
