@@ -12,6 +12,9 @@
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         新增
       </el-button>
+      <el-button style="margin-bottom:20px" type="primary" icon="el-icon-document" @click="handleSelectionDelete">
+        删除
+      </el-button>
     </div>
 
     <el-table
@@ -23,7 +26,9 @@
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column type="selection" align="center" />
       <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
@@ -85,13 +90,28 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="应用名称">
+        <el-form-item label="任务名称">
           <el-input v-model="temp.app_name" />
         </el-form-item>
-        <el-form-item label="应用编码">
+        <el-form-item label="负责人">
           <el-input v-model="temp.app_code" />
         </el-form-item>
-        <el-form-item label="应用简介">
+        <el-form-item label="任务类型">
+          <el-input v-model="temp.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="调度类型">
+          <el-input v-model="temp.app_name" />
+        </el-form-item>
+        <el-form-item label="执行目录">
+          <el-input v-model="temp.app_code" />
+        </el-form-item>
+        <el-form-item label="执行命令">
+          <el-input v-model="temp.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="Cron">
+          <el-input v-model="temp.app_code" />
+        </el-form-item>
+        <el-form-item label="超时时间">
           <el-input v-model="temp.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
         </el-form-item>
         <el-form-item label="状态">
@@ -175,6 +195,7 @@ export default {
         manager: undefined,
         status: undefined
       },
+      multipleSelection: [],
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
@@ -324,6 +345,33 @@ export default {
         })
         this.list.splice(index, 1)
       })
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    handleSelectionDelete() {
+      if (this.multipleSelection.length) {
+        const ids = []
+        this.multipleSelection.forEach((row, index) => {
+          ids.push(row.id)
+        })
+        toDelete({ ids: ids }).then(() => {
+          this.$notify({
+            title: 'Success',
+            message: 'Delete Successfully',
+            type: 'success',
+            duration: 2000
+          })
+          this.getList()
+        })
+      } else {
+        this.$notify({
+          title: 'Error',
+          message: 'Delete Error, Ids is null',
+          type: 'error',
+          duration: 2000
+        })
+      }
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
