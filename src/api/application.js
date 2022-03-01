@@ -8,19 +8,19 @@ export function getList(params) {
   })
 }
 
-export function add(params) {
+export function add(data) {
   return request({
     url: '/backend/application/add',
     method: 'post',
-    params
+    data
   })
 }
 
-export function edit(params) {
+export function edit(data) {
   return request({
     url: '/backend/application/edit',
     method: 'post',
-    params
+    data
   })
 }
 
