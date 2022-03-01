@@ -68,6 +68,18 @@ export const constantRoutes = [
   },
 
   {
+    path: '/',
+    component: Layout,
+    redirect: '/task/index',
+    children: [{
+      path: 'taskList',
+      name: 'Dashboard',
+      component: () => import('@/views/task/index'),
+      meta: { title: '任务管理', icon: 'nested' }
+    }]
+  },
+
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',

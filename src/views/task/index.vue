@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.app_name" placeholder="请输入应用名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.app_code" placeholder="请输入应用编码" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.name" placeholder="请输入任务名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.manager" placeholder="请输入负责人" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.status" placeholder="请选择状态" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in statusSelectList" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
@@ -29,19 +29,24 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应用编码" width="200px" align="center">
+      <el-table-column label="任务名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.app_code }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应用名称" width="200px" align="center">
+      <el-table-column label="任务类型" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.app_name }}</span>
+          <span>{{ row.mode === 1 ? '守护进程' : '定时执行' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="系统简介" width="300px" align="center">
+      <el-table-column label="cron表达式" width="300px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.introduction }}</span>
+          <span>{{ row.cron_formula }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="负责人" width="200px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.manager }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" width="100px" align="center">
@@ -53,7 +58,7 @@
       </el-table-column>
       <el-table-column label="更新时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.updated_at}}</span>
+          <span>{{ row.updated_at }}</span>
         </template>
       </el-table-column>
 
@@ -121,7 +126,7 @@
 </template>
 
 <script>
-import { getList, add, edit, switchStatus, toDelete } from '@/api/application'
+import { getList, add, edit, switchStatus, toDelete } from '@/api/task'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -165,8 +170,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        app_name: undefined,
-        app_code: undefined,
+        app_id: 1,
+        name: undefined,
+        manager: undefined,
         status: undefined
       },
       importanceOptions: [1, 2, 3],

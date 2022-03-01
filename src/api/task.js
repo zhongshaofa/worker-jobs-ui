@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getList(params) {
   return request({
-    url: '/backend/application/list',
+    url: '/backend/task/list',
     method: 'get',
     params
   })
@@ -10,7 +10,7 @@ export function getList(params) {
 
 export function add(data) {
   return request({
-    url: '/backend/application/add',
+    url: '/backend/task/add',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function add(data) {
 
 export function edit(data) {
   return request({
-    url: '/backend/application/edit',
+    url: '/backend/task/edit',
     method: 'post',
     data
   })
@@ -26,7 +26,7 @@ export function edit(data) {
 
 export function detail(params) {
   return request({
-    url: '/backend/application/detail',
+    url: '/backend/task/detail',
     method: 'get',
     params
   })
@@ -34,7 +34,7 @@ export function detail(params) {
 
 export function toDelete(data) {
   return request({
-    url: '/backend/application/delete',
+    url: '/backend/task/delete',
     method: 'post',
     data
   })
@@ -42,24 +42,8 @@ export function toDelete(data) {
 
 export function switchStatus(data) {
   return request({
-    url: '/backend/application/switch_status',
+    url: '/backend/task/switch_status',
     method: 'post',
     data
-  })
-}
-
-export function clientAuth(params) {
-  return request({
-    url: '/backend/application/client/auth',
-    method: 'post',
-    params
-  })
-}
-
-export function getClientList(params) {
-  return request({
-    url: '/backend/application/client/list',
-    method: 'get',
-    params
   })
 }
