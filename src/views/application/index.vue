@@ -58,19 +58,19 @@
       </el-table-column>
 
       // 操作栏目
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
+            编辑
           </el-button>
-          <el-button v-if="row.status!='启用'" size="mini" type="success" @click="handleModifyStatus(row,'启用')">
-            Publish
+          <el-button v-if="row.status!==1" size="mini" type="success" @click="handleModifyStatus(row,1)">
+            启用
           </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Draft
+          <el-button v-if="row.status!==2" size="mini" @click="handleModifyStatus(row,2)">
+            禁用
           </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            Delete
+          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import { getList, add, edit } from '@/api/application'
+import {getList, add, edit, switchStatus, deleteApplication} from '@/api/application'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -223,11 +223,13 @@ export default {
       this.getList()
     },
     handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
+      switchStatus({ ids: [row.id], status: status }).then(() => {
+        this.$message({
+          message: '操作Success',
+          type: 'success'
+        })
+        row.status = status
       })
-      row.status = status
     },
     sortChange(data) {
       const { prop, order } = data
@@ -307,13 +309,15 @@ export default {
       })
     },
     handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
+      deleteApplication({ ids: [row.id] }).then(() => {
+        this.$notify({
+          title: 'Success',
+          message: 'Delete Successfully',
+          type: 'success',
+          duration: 2000
+        })
+        this.list.splice(index, 1)
       })
-      this.list.splice(index, 1)
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {

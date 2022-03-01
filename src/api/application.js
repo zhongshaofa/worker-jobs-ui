@@ -32,19 +32,19 @@ export function detail(params) {
   })
 }
 
-export function toDelete(params) {
+export function deleteApplication(data) {
   return request({
     url: '/backend/application/delete',
     method: 'post',
-    params
+    data
   })
 }
 
-export function switchStatus(params) {
+export function switchStatus(data) {
   return request({
     url: '/backend/application/switch_status',
     method: 'post',
-    params
+    data
   })
 }
 
