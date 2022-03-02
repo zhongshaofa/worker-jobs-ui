@@ -89,41 +89,58 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="60%">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="任务名称">
-          <el-input v-model="temp.name" />
-        </el-form-item>
-        <el-form-item label="负责人">
-          <el-input v-model="temp.manager" />
-        </el-form-item>
-        <el-form-item label="任务类型">
-          <el-select v-model="temp.mode" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in modeSelectList" :key="item.key" :label="item.label" :value="item.key" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="调度类型">
-          <el-select v-model="temp.schedule_type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in scheduleTypeSelectList" :key="item.key" :label="item.label" :value="item.key" />
-          </el-select>
-        </el-form-item>
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 90%; margin-left:50px;">
+        <el-row type="flex">
+          <el-col :span="12">
+            <el-form-item label="任务名称">
+              <el-input v-model="temp.name" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" style="margin-left: 30px;">
+            <el-form-item label="负责人">
+              <el-input v-model="temp.manager" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row type="flex">
+          <el-col :span="12">
+            <el-form-item label="任务类型">
+              <el-select v-model="temp.mode" class="filter-item" placeholder="Please select">
+                <el-option v-for="item in modeSelectList" :key="item.key" :label="item.label" :value="item.key" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" style="margin-left: 30px;">
+            <el-form-item label="调度类型">
+              <el-select v-model="temp.schedule_type" class="filter-item" placeholder="Please select">
+                <el-option v-for="item in scheduleTypeSelectList" :key="item.key" :label="item.label" :value="item.key" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-form-item label="执行目录">
           <el-input v-model="temp.directory" />
         </el-form-item>
         <el-form-item label="执行命令">
-          <el-input v-model="temp.command" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
+          <el-input v-model="temp.command" />
         </el-form-item>
-        <el-form-item label="Cron">
-          <el-input v-model="temp.cron_formula" />
-          <el-button type="primary" @click="showDialog">选择</el-button>
-        </el-form-item>
-        <el-form-item label="超时时间">
-          <el-input v-model="temp.cron_time_out" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusSelectList" :key="item.key" :label="item.label" :value="item.key" />
-          </el-select>
-        </el-form-item>
+
+        <el-row type="flex">
+          <el-col :span="12">
+            <el-form-item label="Cron">
+              <el-input v-model="temp.cron_formula" />
+              <el-button type="primary" @click="showDialog">选择</el-button>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" style="margin-left: 30px;">
+            <el-form-item label="超时时间">
+              <el-input v-model="temp.cron_time_out" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-form-item label="备注信息">
           <el-input v-model="temp.remark" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
         </el-form-item>
@@ -228,12 +245,11 @@ export default {
         manager: '',
         name: '',
         mode: 1,
-        cron_time_out: 1,
+        cron_time_out: 0,
         cron_formula: '',
         schedule_type: 1,
         directory: '',
-        command: '',
-        status: 1
+        command: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -244,10 +260,8 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        app_name: [{ required: true, message: '应用名称 必须', trigger: 'change' }],
-        app_code: [{ required: true, message: '应用编码 必须', trigger: 'change' }],
-        introduction: [{ required: true, message: '简介 必须', trigger: 'blur' }],
-        status: [{ required: true, message: '状态 必须', trigger: 'blur' }]
+        name: [{ required: true, message: '名称 必须', trigger: 'blur' }],
+        mode: [{ required: true, message: '任务类型 必须', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -302,10 +316,15 @@ export default {
       this.temp = {
         id: undefined,
         remark: '',
-        app_code: '',
-        app_name: '',
-        introduction: '',
-        status: 1
+        app_id: 1,
+        manager: '',
+        name: '',
+        mode: 1,
+        cron_time_out: 0,
+        cron_formula: '',
+        schedule_type: 1,
+        directory: '',
+        command: ''
       }
     },
     handleCreate() {
