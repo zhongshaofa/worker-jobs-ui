@@ -114,18 +114,19 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="50%">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 90%; margin-left:50px;">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 90%; margin-left:50px;">
 
-        <el-form-item label="用户名称">
-          <el-input v-model="temp.username" placeholder="请输入 用户名称" />
+        <el-form-item label="client名称">
+          <el-input v-model="temp.client_name" placeholder="请输入 client名称" />
         </el-form-item>
-        <el-form-item v-if="dialogStatus==='create'" label="用户密码">
-          <el-input v-model="temp.password" placeholder="请输入 用户密码" />
+        <el-form-item label="client编码">
+          <el-input v-model="temp.client_code" placeholder="请输入 client编码" />
         </el-form-item>
-        <el-form-item label="角色类型">
-          <el-select v-model="temp.role_type" class="filter-item" placeholder="请选择 角色类型">
-            <el-option v-for="item in roleTypeSelectList" :key="item.key" :label="item.label" :value="item.key" />
-          </el-select>
+        <el-form-item label="IP地址">
+          <el-input v-model="temp.ip" placeholder="请输入 client名称" />
+        </el-form-item>
+        <el-form-item label="端口号">
+          <el-input v-model.number="temp.port" type="number" placeholder="请输入 client名称" />
         </el-form-item>
         <el-form-item label="备注信息">
           <el-input v-model="temp.remark" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="请输入备注信息" />
@@ -216,9 +217,10 @@ export default {
       showReviewer: false,
       temp: {
         id: undefined,
-        username: '',
-        password: '',
-        role_type: 2,
+        client_name: '',
+        client_code: '',
+        ip: '',
+        port: '',
         status: 1,
         remark: ''
       },
@@ -286,9 +288,10 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        username: '',
-        password: '',
-        role_type: 2,
+        client_name: '',
+        client_code: '',
+        ip: '',
+        port: '',
         status: 1,
         remark: ''
       }
