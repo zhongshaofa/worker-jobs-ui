@@ -53,17 +53,12 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('请输入您的用户名'))
-      } else {
-        callback()
-      }
+      callback()
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 4) {
