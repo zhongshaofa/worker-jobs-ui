@@ -103,7 +103,7 @@
           取消
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          新增
+          保存
         </el-button>
       </div>
     </el-dialog>

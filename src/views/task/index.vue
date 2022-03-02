@@ -88,17 +88,17 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="60%">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="55%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 90%; margin-left:50px;">
         <el-row type="flex">
           <el-col :span="12">
             <el-form-item label="任务名称">
-              <el-input v-model="temp.name" />
+              <el-input v-model="temp.name" placeholder="请输入 任务名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12" style="margin-left: 30px;">
             <el-form-item label="负责人">
-              <el-input v-model="temp.manager" />
+              <el-input v-model="temp.manager" placeholder="请输入 负责人" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -106,14 +106,14 @@
         <el-row type="flex">
           <el-col :span="12">
             <el-form-item label="任务类型">
-              <el-select v-model="temp.mode" class="filter-item" placeholder="Please select">
+              <el-select v-model="temp.mode" class="filter-item" placeholder="请选择 任务类型">
                 <el-option v-for="item in modeSelectList" :key="item.key" :label="item.label" :value="item.key" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12" style="margin-left: 30px;">
             <el-form-item label="调度类型">
-              <el-select v-model="temp.schedule_type" class="filter-item" placeholder="Please select">
+              <el-select v-model="temp.schedule_type" class="filter-item" placeholder="请选择 调度类型">
                 <el-option v-for="item in scheduleTypeSelectList" :key="item.key" :label="item.label" :value="item.key" />
               </el-select>
             </el-form-item>
@@ -121,13 +121,13 @@
         </el-row>
 
         <el-form-item label="执行目录">
-          <el-input v-model="temp.directory" />
+          <el-input v-model="temp.directory" placeholder="请输入 执行目录" />
         </el-form-item>
         <el-form-item label="执行命令">
-          <el-input v-model="temp.command" />
+          <el-input v-model="temp.command" placeholder="请输入 执行命令" />
         </el-form-item>
 
-        <el-row type="flex">
+        <el-row v-if="temp.mode===2" type="flex">
           <el-col :span="12">
             <el-form-item label="Cron">
               <el-input v-model="temp.cron_formula" />
@@ -136,13 +136,13 @@
           </el-col>
           <el-col :span="12" style="margin-left: 30px;">
             <el-form-item label="超时时间">
-              <el-input v-model="temp.cron_time_out" />
+              <el-input v-model="temp.cron_time_out" placeholder="请输入 超时时间" />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-form-item label="备注信息">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
+          <el-input v-model="temp.remark" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="请输入备注信息" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -150,7 +150,7 @@
           取消
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          新增
+          保存
         </el-button>
       </div>
     </el-dialog>
@@ -338,6 +338,10 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          if (this.temp.mode === 1) {
+            this.temp.cron_formula = ''
+            this.temp.cron_time_out = 0
+          }
           add(this.temp).then(() => {
             this.getList()
             this.dialogFormVisible = false
