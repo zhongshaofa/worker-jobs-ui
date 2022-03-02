@@ -88,31 +88,36 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="60%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item label="任务名称">
-          <el-input v-model="temp.app_name" />
+          <el-input v-model="temp.name" />
         </el-form-item>
         <el-form-item label="负责人">
-          <el-input v-model="temp.app_code" />
+          <el-input v-model="temp.manager" />
         </el-form-item>
         <el-form-item label="任务类型">
-          <el-input v-model="temp.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
+          <el-select v-model="temp.mode" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in modeSelectList" :key="item.key" :label="item.label" :value="item.key" />
+          </el-select>
         </el-form-item>
         <el-form-item label="调度类型">
-          <el-input v-model="temp.app_name" />
+          <el-select v-model="temp.schedule_type" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in scheduleTypeSelectList" :key="item.key" :label="item.label" :value="item.key" />
+          </el-select>
         </el-form-item>
         <el-form-item label="执行目录">
-          <el-input v-model="temp.app_code" />
+          <el-input v-model="temp.directory" />
         </el-form-item>
         <el-form-item label="执行命令">
-          <el-input v-model="temp.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
+          <el-input v-model="temp.command" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
         </el-form-item>
         <el-form-item label="Cron">
-          <el-input v-model="temp.app_code" />
+          <el-input v-model="temp.cron_formula" />
+          <el-button type="primary" @click="showDialog">选择</el-button>
         </el-form-item>
         <el-form-item label="超时时间">
-          <el-input v-model="temp.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
+          <el-input v-model="temp.cron_time_out" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
@@ -133,6 +138,10 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="生成 cron" :visible.sync="showCron">
+      <vcrontab :expression="expression" @hide="showCron=false" @fill="crontabFill" />
+    </el-dialog>
+
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
         <el-table-column prop="key" label="Channel" />
@@ -150,6 +159,7 @@ import { getList, add, edit, switchStatus, toDelete } from '@/api/task'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import vcrontab from 'vcrontab'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -166,7 +176,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, vcrontab },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -181,8 +191,16 @@ export default {
       return calendarTypeKeyValue[type]
     }
   },
+  props: {
+    width: {
+      type: String,
+      default: '80%'
+    }
+  },
   data() {
     return {
+      expression: '',
+      showCron: false,
       tableKey: 0,
       list: null,
       total: 0,
@@ -200,13 +218,21 @@ export default {
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusSelectList: [{ label: '启用', key: 1 }, { label: '禁用', key: 2 }],
+      modeSelectList: [{ label: '守护进程', key: 1 }, { label: '定时执行', key: 2 }],
+      scheduleTypeSelectList: [{ label: '单机运行', key: 1 }, { label: '空闲执行', key: 2 }, { label: '分布式', key: 3 }],
       showReviewer: false,
       temp: {
         id: undefined,
         remark: '',
-        app_code: '',
-        app_name: '',
-        introduction: '',
+        app_id: 1,
+        manager: '',
+        name: '',
+        mode: 1,
+        cron_time_out: 1,
+        cron_formula: '',
+        schedule_type: 1,
+        directory: '',
+        command: '',
         status: 1
       },
       dialogFormVisible: false,
@@ -385,6 +411,15 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    crontabFill(value) {
+      // 确定后回传的值
+      this.temp.cron_formula = value
+    },
+    showDialog() {
+      this.expression = this.temp.cron_formula
+      // 传入的 cron 表达式，可以反解析到 UI 上
+      this.showCron = true
     }
   }
 }
