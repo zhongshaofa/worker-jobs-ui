@@ -1,8 +1,11 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.app_name" placeholder="请输入应用名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.app_code" placeholder="请输入应用编码" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.client_name" placeholder="请输入名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.client_code" placeholder="请输入编码" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-select v-model="listQuery.role_type" placeholder="是否健康" clearable style="width: 120px" class="filter-item">
+        <el-option v-for="item in boolSelectList" :key="item.key" :label="item.label" :value="item.key" />
+      </el-select>
       <el-select v-model="listQuery.status" placeholder="状态" clearable style="width: 90px;margin-right: 30px" class="filter-item">
         <el-option v-for="item in statusSelectList" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
@@ -34,19 +37,46 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应用编码" width="200px" align="center">
+      <el-table-column label="client名称" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.app_code }}</span>
+          <span>{{ row.client_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应用名称" width="200px" align="center">
+      <el-table-column label="client编码" width="120px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.app_name }}</span>
+          <span>{{ row.client_code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="系统简介" width="300px" align="center">
+      <el-table-column label="IP" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.introduction }}</span>
+          <span>{{ row.ip }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="端口" width="60px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.port }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="检测时间" width="200px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.check_heartbeat_at }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否健康" class-name="status-col" width="100px" align="center">
+        <template slot-scope="{row}">
+          <el-tag :type="row.is_heartbeat | statusFilter">
+            {{ row.status === 1 ? '是' : '否' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="空闲CPU" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.cpu_percent }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="空闲内存" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.memory_percent }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" width="100px" align="center">
@@ -58,7 +88,7 @@
       </el-table-column>
       <el-table-column label="更新时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.updated_at}}</span>
+          <span>{{ row.updated_at }}</span>
         </template>
       </el-table-column>
 
@@ -83,24 +113,27 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="应用名称">
-          <el-input v-model="temp.app_name" />
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="50%">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 90%; margin-left:50px;">
+
+        <el-form-item label="用户名称">
+          <el-input v-model="temp.username" placeholder="请输入 用户名称" />
         </el-form-item>
-        <el-form-item label="应用编码">
-          <el-input v-model="temp.app_code" />
+        <el-form-item v-if="dialogStatus==='create'" label="用户密码">
+          <el-input v-model="temp.password" placeholder="请输入 用户密码" />
         </el-form-item>
-        <el-form-item label="应用简介">
-          <el-input v-model="temp.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusSelectList" :key="item.key" :label="item.label" :value="item.key" />
+        <el-form-item label="角色类型">
+          <el-select v-model="temp.role_type" class="filter-item" placeholder="请选择 角色类型">
+            <el-option v-for="item in roleTypeSelectList" :key="item.key" :label="item.label" :value="item.key" />
           </el-select>
         </el-form-item>
         <el-form-item label="备注信息">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
+          <el-input v-model="temp.remark" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="请输入备注信息" />
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="temp.status" class="filter-item" placeholder="请选择 状态">
+            <el-option v-for="item in statusSelectList" :key="item.key" :label="item.label" :value="item.key" />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -113,20 +146,11 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getList, add, edit, switchStatus, toDelete } from '@/api/application'
+import { getList, add, edit, switchStatus, toDelete } from '@/api/client'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -151,7 +175,6 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        0: 'info',
         1: 'success',
         2: 'danger'
       }
@@ -159,6 +182,12 @@ export default {
     },
     typeFilter(type) {
       return calendarTypeKeyValue[type]
+    }
+  },
+  props: {
+    width: {
+      type: String,
+      default: '80%'
     }
   },
   data() {
@@ -170,23 +199,28 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        app_name: undefined,
-        app_code: undefined,
+        app_id: 1,
+        client_name: undefined,
+        client_code: undefined,
+        is_heartbeat: undefined,
         status: undefined
       },
-      importanceOptions: [1, 2, 3],
       multipleSelection: [],
+      importanceOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
+      boolSelectList: [{ label: '是', key: 1 }, { label: '否', key: 2 }],
       statusSelectList: [{ label: '启用', key: 1 }, { label: '禁用', key: 2 }],
+      modeSelectList: [{ label: '守护进程', key: 1 }, { label: '定时执行', key: 2 }],
+      scheduleTypeSelectList: [{ label: '单机运行', key: 1 }, { label: '空闲执行', key: 2 }, { label: '分布式', key: 3 }],
       showReviewer: false,
       temp: {
         id: undefined,
-        remark: '',
-        app_code: '',
-        app_name: '',
-        introduction: '',
-        status: 1
+        username: '',
+        password: '',
+        role_type: 2,
+        status: 1,
+        remark: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -197,10 +231,8 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        app_name: [{ required: true, message: '应用名称 必须', trigger: 'change' }],
-        app_code: [{ required: true, message: '应用编码 必须', trigger: 'change' }],
-        introduction: [{ required: true, message: '简介 必须', trigger: 'blur' }],
-        status: [{ required: true, message: '状态 必须', trigger: 'blur' }]
+        name: [{ required: true, message: '名称 必须', trigger: 'blur' }],
+        mode: [{ required: true, message: '任务类型 必须', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -254,11 +286,11 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        remark: '',
-        app_code: '',
-        app_name: '',
-        introduction: '',
-        status: 1
+        username: '',
+        password: '',
+        role_type: 2,
+        status: 1,
+        remark: ''
       }
     },
     handleCreate() {
@@ -272,6 +304,10 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          if (this.temp.mode === 1) {
+            this.temp.cron_formula = ''
+            this.temp.cron_time_out = 0
+          }
           add(this.temp).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -325,14 +361,8 @@ export default {
         this.list.splice(index, 1)
       })
     },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
+    handleSelectionChange(val) {
+      this.multipleSelection = val
     },
     handleSelectionDelete() {
       if (this.multipleSelection.length) {
@@ -358,13 +388,19 @@ export default {
         })
       }
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val
+    formatJson(filterVal) {
+      return this.list.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
+        }
+      }))
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
-    }
+    },
   }
 }
 </script>

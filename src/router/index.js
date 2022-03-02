@@ -82,6 +82,18 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
+    redirect: '/client/index',
+    children: [{
+      path: 'clientList',
+      name: 'Dashboard',
+      component: () => import('@/views/client/index'),
+      meta: { title: 'client管理', icon: 'nested' }
+    }]
+  },
+
+  {
+    path: '/',
+    component: Layout,
     redirect: '/user/index',
     children: [{
       path: 'userList',

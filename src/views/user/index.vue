@@ -2,19 +2,19 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.username" placeholder="请输入用户名" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.role_type" placeholder="请选择类型" clearable style="width: 90px" class="filter-item">
+      <el-select v-model="listQuery.role_type" placeholder="角色类型" clearable style="width: 120px" class="filter-item">
         <el-option v-for="item in roleTypeSelectList" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
-      <el-select v-model="listQuery.status" placeholder="请选择状态" clearable style="width: 90px" class="filter-item">
+      <el-select v-model="listQuery.status" placeholder="状态" clearable style="width: 90px;margin-right: 30px" class="filter-item">
         <el-option v-for="item in statusSelectList" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item el-button--success" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         新增
       </el-button>
-      <el-button style="margin-bottom:20px" type="primary" icon="el-icon-document" @click="handleSelectionDelete">
+      <el-button style="margin-bottom:20px" type="primary" icon="el-icon-delete-solid" class="el-button--danger" @click="handleSelectionDelete">
         删除
       </el-button>
     </div>
