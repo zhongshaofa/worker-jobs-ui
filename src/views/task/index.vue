@@ -267,6 +267,9 @@ export default {
     }
   },
   created() {
+    if (this.$route.query.app_id.length > 0) {
+      this.listQuery.app_id = this.$route.query.app_id
+    }
     this.getList()
   },
   methods: {

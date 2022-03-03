@@ -36,7 +36,7 @@
       </el-table-column>
       <el-table-column label="应用名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <p class="application-info-code">{{ row.app_code }}</p>
+          <p class="application-info-code" @click="jumpTask(row.id)">{{ row.app_code }}</p>
           <span class="application-info-name">{{ row.app_name }}</span>
         </template>
       </el-table-column>
@@ -356,6 +356,9 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    jumpTask(id) {
+      this.$router.push({ path: '/taskList', query: { app_id: id }})
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort
