@@ -82,6 +82,18 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
+    redirect: '/scheduler/index',
+    children: [{
+      path: 'schedulerList',
+      name: 'Dashboard',
+      component: () => import('@/views/scheduler/index'),
+      meta: { title: '调度列表', icon: 'nested' }
+    }]
+  },
+
+  {
+    path: '/',
+    component: Layout,
     redirect: '/client/index',
     children: [{
       path: 'clientList',
