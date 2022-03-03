@@ -34,17 +34,13 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应用编码" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.app_code }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="应用名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.app_name }}</span>
+          <p class="application-info-code">{{ row.app_code }}</p>
+          <span class="application-info-name">{{ row.app_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="系统简介" width="300px" align="center">
+      <el-table-column label="应用简介" width="300px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.introduction }}</span>
         </template>
@@ -58,7 +54,7 @@
       </el-table-column>
       <el-table-column label="更新时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.updated_at}}</span>
+          <span>{{ row.updated_at }}</span>
         </template>
       </el-table-column>
 
@@ -85,11 +81,11 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="应用名称">
-          <el-input v-model="temp.app_name" />
-        </el-form-item>
         <el-form-item label="应用编码">
           <el-input v-model="temp.app_code" />
+        </el-form-item>
+        <el-form-item label="应用名称">
+          <el-input v-model="temp.app_name" />
         </el-form-item>
         <el-form-item label="应用简介">
           <el-input v-model="temp.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea" placeholder="Please input" />
@@ -368,3 +364,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.application-info-code{
+  font-size: 20px;
+  color: #3f9eff;
+  margin: 5px;
+}
+.application-info-name{
+  color: #8b9cad;
+}
+</style>
