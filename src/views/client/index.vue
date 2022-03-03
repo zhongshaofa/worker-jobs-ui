@@ -65,7 +65,7 @@
       <el-table-column label="是否健康" class-name="status-col" width="100px" align="center">
         <template slot-scope="{row}">
           <el-tag :type="row.is_heartbeat | statusFilter">
-            {{ row.status === 1 ? '是' : '否' }}
+            {{ row.is_heartbeat === 1 ? '是' : '否' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -403,7 +403,7 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
-    },
+    }
   }
 }
 </script>
