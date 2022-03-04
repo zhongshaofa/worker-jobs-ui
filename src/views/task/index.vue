@@ -16,14 +16,9 @@
         title="确定删除？"
         @onConfirm="handleSelectionDelete"
       >
-        <el-popconfirm
-          title="确定删除？"
-          @onConfirm="handleSelectionDelete"
-        >
-          <el-button slot="reference" style="margin-left: 10px;margin-bottom:20px" type="primary" icon="el-icon-delete-solid" class="el-button--danger">
-            删除
-          </el-button>
-        </el-popconfirm>
+        <el-button slot="reference" style="margin-left: 10px;margin-bottom:20px" type="primary" icon="el-icon-delete-solid" class="el-button--danger">
+          删除
+        </el-button>
       </el-popconfirm>
     </div>
 
