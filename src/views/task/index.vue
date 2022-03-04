@@ -80,18 +80,18 @@
 
       // 操作栏目
       <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
+        <template slot-scope="{row, $index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
           <el-button v-if="row.status!==1" size="mini" type="success" @click="handleModifyStatus(row,1)">
             启用
           </el-button>
-          <el-button v-if="row.status!==2" size="mini" @click="handleModifyStatus(row,2)">
+          <el-button v-if="row.status!==2" size="mini" type="warning" @click="handleModifyStatus(row,2)">
             禁用
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
+          <el-button size="mini" @click="jumpScheduler(row)">
+            调度列表
           </el-button>
         </template>
       </el-table-column>
@@ -460,6 +460,17 @@ export default {
     },
     goBack() {
       this.$router.push({ path: '/applicationList' })
+    },
+    jumpScheduler(row) {
+      this.$router.push({
+        path: '/schedulerList', query: {
+          task_id: row.id,
+          task_name: row.name,
+          app_id: this.listQuery.app_id,
+          app_name: this.app_name,
+          app_code: this.app_code
+        }
+      })
     },
     showDialog() {
       this.expression = this.temp.cron_formula

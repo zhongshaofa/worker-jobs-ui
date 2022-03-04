@@ -76,7 +76,7 @@ export const constantRoutes = [
       path: 'taskList',
       name: 'Dashboard',
       component: () => import('@/views/task/index'),
-      meta: { title: '任务管理', icon: 'nested' }
+      meta: { title: '应用管理 / 任务管理', icon: 'nested' }
     }]
   },
 
@@ -84,11 +84,12 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/scheduler/index',
+    hidden: true,
     children: [{
       path: 'schedulerList',
       name: 'Dashboard',
       component: () => import('@/views/scheduler/index'),
-      meta: { title: '调度列表', icon: 'nested' }
+      meta: { title: '应用管理 / 任务管理 / 调度列表', icon: 'nested' }
     }]
   },
 

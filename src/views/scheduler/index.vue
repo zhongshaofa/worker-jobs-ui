@@ -1,5 +1,11 @@
 <template>
   <div class="app-container">
+    <div class="el-page-header" style="margin-bottom: 20px">
+      <div class="el-page-header__left" @click="goBack"><i class="el-icon-back" />
+        <div class="el-page-header__title">返回</div>
+      </div>
+      <div class="el-page-header__content">{{ app_code }} / {{ app_name }} / {{task_name}}</div>
+    </div>
     <div class="filter-container">
       <el-select v-model="listQuery.scheduler_status" placeholder="选择状态" clearable style="width: 200px;margin-right: 30px;margin-bottom: 20px" class="filter-item">
         <el-option v-for="item in schedulerStatusSelectList" :key="item.key" :label="item.label" :value="item.key" />
@@ -35,7 +41,7 @@
           <span>{{ row.client_list.length }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="调度时间" width="300px" align="center">
+      <el-table-column label="调度时间" align="center">
         <template slot-scope="{row}">
           <span>{{ row.task_schedule.schedule_time }}</span>
         </template>
@@ -47,14 +53,14 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" width="200px" align="center">
+      <el-table-column label="更新时间" align="center">
         <template slot-scope="{row}">
           <span>{{ row.task_schedule.updated_at }}</span>
         </template>
       </el-table-column>
 
       // 操作栏目
-      <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="100px" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
@@ -111,6 +117,10 @@ export default {
         task_id: 1,
         scheduler_status: undefined
       },
+      task_name: undefined,
+      app_id: undefined,
+      app_name: undefined,
+      app_code: undefined,
       multipleSelection: [],
       importanceOptions: [1, 2, 3],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
@@ -146,6 +156,13 @@ export default {
     }
   },
   created() {
+    if (this.$route.query.task_id !== undefined) {
+      this.listQuery.task_id = parseInt(this.$route.query.task_id)
+      this.task_name = this.$route.query.task_name
+      this.app_id = parseInt(this.$route.query.app_id)
+      this.app_name = this.$route.query.app_name
+      this.app_code = this.$route.query.app_code
+    }
     this.getList()
   },
   methods: {
@@ -229,6 +246,15 @@ export default {
         }
       })
       return title
+    },
+    goBack() {
+      this.$router.push({
+        path: '/taskList', query: {
+          app_id: this.app_id,
+          app_name: this.app_name,
+          app_code: this.app_code
+        }
+      })
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort
