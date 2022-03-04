@@ -78,11 +78,11 @@
           <el-button v-if="row.status!==1" size="mini" type="success" @click="handleModifyStatus(row,1)">
             启用
           </el-button>
-          <el-button v-if="row.status!==2" size="mini" @click="handleModifyStatus(row,2)">
+          <el-button v-if="row.status!==2" size="mini" type="warning" @click="handleModifyStatus(row,2)">
             禁用
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
+          <el-button size="mini" type="info" @click="handleResetPassword(row)">
+            重置密码
           </el-button>
         </template>
       </el-table-column>
@@ -123,11 +123,31 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="重置密码" :visible.sync="dialogResetPasswordVisible" width="600px">
+      <el-form ref="dataResetPasswordForm" :rules="rules" :model="tempResetPassword" label-position="left" label-width="70px" style="width: 90%; margin-left:30px;">
+
+        <el-form-item label="重置密码">
+          <el-input v-model="tempResetPassword.password" type="password" placeholder="请输入密码" />
+        </el-form-item>
+        <el-form-item label="确认密码">
+          <el-input v-model="tempResetPassword.again_password" type="password" placeholder="请输入再次输入密码" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogResetPasswordVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="resetPasswordData()">
+          保存
+        </el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { getList, add, edit, switchStatus, toDelete } from '@/api/user'
+import {getList, add, edit, switchStatus, toDelete, resetPassword} from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -199,7 +219,13 @@ export default {
         status: 1,
         remark: ''
       },
+      tempResetPassword: {
+        id: undefined,
+        password: '',
+        again_password: ''
+      },
       dialogFormVisible: false,
+      dialogResetPasswordVisible: false,
       dialogStatus: '',
       textMap: {
         update: '编辑',
@@ -297,6 +323,23 @@ export default {
         }
       })
     },
+    resetPasswordData() {
+      this.$refs['dataResetPasswordForm'].validate((valid) => {
+        if (valid) {
+          resetPassword(this.tempResetPassword).then(() => {
+            this.dialogResetPasswordVisible = false
+            this.tempResetPassword.again_password = ''
+            this.tempResetPassword.password = ''
+            this.$notify({
+              title: 'Success',
+              message: 'Reset Password Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.temp.timestamp = new Date(this.temp.timestamp)
@@ -304,6 +347,13 @@ export default {
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
+      })
+    },
+    handleResetPassword(row) {
+      this.tempResetPassword.id = row.id // copy obj
+      this.dialogResetPasswordVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataResetPasswordForm'].clearValidate()
       })
     },
     updateData() {

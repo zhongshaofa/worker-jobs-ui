@@ -47,3 +47,11 @@ export function switchStatus(data) {
     data
   })
 }
+
+export function resetPassword(data) {
+  return request({
+    url: '/backend/user/reset_password',
+    method: 'post',
+    data
+  })
+}
