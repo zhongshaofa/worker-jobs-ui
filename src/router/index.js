@@ -71,6 +71,7 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/task/index',
+    hidden: true,
     children: [{
       path: 'taskList',
       name: 'Dashboard',

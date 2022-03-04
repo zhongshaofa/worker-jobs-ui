@@ -1,5 +1,11 @@
 <template>
   <div class="app-container">
+    <div class="el-page-header" style="margin-bottom: 20px">
+      <div class="el-page-header__left" @click="goBack"><i class="el-icon-back" />
+        <div class="el-page-header__title">返回</div>
+      </div>
+      <div class="el-page-header__content">{{ app_code }} / {{ app_name }}</div>
+    </div>
     <div class="filter-container">
       <el-input v-model="listQuery.name" placeholder="请输入任务名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.manager" placeholder="请输入负责人" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
@@ -227,6 +233,8 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      app_code: undefined,
+      app_name: undefined,
       listQuery: {
         page: 1,
         limit: 20,
@@ -246,7 +254,7 @@ export default {
       temp: {
         id: undefined,
         remark: '',
-        app_id: 1,
+        app_id: undefined,
         manager: '',
         name: '',
         mode: 1,
@@ -273,7 +281,9 @@ export default {
   },
   created() {
     if (this.$route.query.app_id !== undefined) {
-      this.listQuery.app_id = this.$route.query.app_id
+      this.listQuery.app_id = parseInt(this.$route.query.app_id)
+      this.app_name = this.$route.query.app_name
+      this.app_code = this.$route.query.app_code
     }
     this.getList()
   },
@@ -324,7 +334,7 @@ export default {
       this.temp = {
         id: undefined,
         remark: '',
-        app_id: 1,
+        app_id: undefined,
         manager: '',
         name: '',
         mode: 1,
@@ -350,6 +360,7 @@ export default {
             this.temp.cron_formula = ''
             this.temp.cron_time_out = 0
           }
+          this.temp.app_id = this.listQuery.app_id
           add(this.temp).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -377,6 +388,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          tempData.app_id = parseInt(this.listQuery.app_id)
           edit(tempData).then(() => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
@@ -446,6 +458,9 @@ export default {
     crontabFill(value) {
       // 确定后回传的值
       this.temp.cron_formula = value
+    },
+    goBack() {
+      this.$router.push({ path: '/applicationList' })
     },
     showDialog() {
       this.expression = this.temp.cron_formula
