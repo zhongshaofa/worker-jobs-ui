@@ -2,9 +2,9 @@
   <div class="app-container">
     <div class="el-page-header" style="margin-bottom: 20px">
       <div class="el-page-header__left" @click="goBack"><i class="el-icon-back" />
-        <div class="el-page-header__title">返回</div>
+        <div class="el-page-header__title"><el-tag type="info" class="back-tag">返回</el-tag></div>
       </div>
-      <div class="el-page-header__content">{{ app_code }} / {{ app_name }} / {{task_name}}</div>
+      <div class="el-page-header__content"><el-tag style="margin-right: 15px">{{ app_code }} / {{ app_name }}</el-tag>  <el-tag type="success">{{ task_name }}</el-tag></div>
     </div>
     <div class="filter-container">
       <el-select v-model="listQuery.scheduler_status" placeholder="选择状态" clearable style="width: 200px;margin-right: 30px;margin-bottom: 20px" class="filter-item">
@@ -114,7 +114,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        task_id: 1,
+        task_id: undefined,
         scheduler_status: undefined
       },
       task_name: undefined,

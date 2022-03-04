@@ -2,9 +2,9 @@
   <div class="app-container">
     <div class="el-page-header" style="margin-bottom: 20px">
       <div class="el-page-header__left" @click="goBack"><i class="el-icon-back" />
-        <div class="el-page-header__title">返回</div>
+        <div class="el-page-header__title"><el-tag type="info" class="back-tag">返回</el-tag></div>
       </div>
-      <div class="el-page-header__content">{{ app_code }} / {{ app_name }}</div>
+      <div class="el-page-header__content"><el-tag>{{ app_code }} / {{ app_name }}</el-tag></div>
     </div>
     <div class="filter-container">
       <el-input v-model="listQuery.name" placeholder="请输入任务名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
@@ -47,7 +47,7 @@
       </el-table-column>
       <el-table-column label="任务名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
+          <span class="task-info" @click="jumpScheduler(row)">{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="任务类型" width="200px" align="center">
@@ -480,3 +480,9 @@ export default {
   }
 }
 </script>
+<style>
+.task-info{
+  font-size: 15px;
+  color: #3f9eff;
+}
+</style>
