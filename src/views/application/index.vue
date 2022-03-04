@@ -12,9 +12,19 @@
       <el-button class="filter-item el-button--success" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         新增
       </el-button>
-      <el-button style="margin-bottom:20px" type="primary" icon="el-icon-delete-solid" class="el-button--danger" @click="handleSelectionDelete">
-        删除
-      </el-button>
+      <el-popconfirm
+        title="确定删除？"
+        @onConfirm="handleSelectionDelete"
+      >
+        <el-popconfirm
+          title="确定删除？"
+          @onConfirm="handleSelectionDelete"
+        >
+          <el-button slot="reference" style="margin-left: 10px;margin-bottom:20px" type="primary" icon="el-icon-delete-solid" class="el-button--danger">
+            删除
+          </el-button>
+        </el-popconfirm>
+      </el-popconfirm>
     </div>
 
     <el-table
@@ -34,13 +44,13 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应用名称" width="200px" align="center">
+      <el-table-column label="应用名称" width="300px" align="center">
         <template slot-scope="{row}">
           <p class="application-info-code" @click="jumpTask(row.id)">{{ row.app_code }}</p>
           <span class="application-info-name">{{ row.app_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应用简介" width="300px" align="center">
+      <el-table-column label="应用简介" align="center">
         <template slot-scope="{row}">
           <span>{{ row.introduction }}</span>
         </template>

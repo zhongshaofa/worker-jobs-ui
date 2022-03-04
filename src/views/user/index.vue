@@ -14,9 +14,19 @@
       <el-button class="filter-item el-button--success" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         新增
       </el-button>
-      <el-button style="margin-bottom:20px" type="primary" icon="el-icon-delete-solid" class="el-button--danger" @click="handleSelectionDelete">
-        删除
-      </el-button>
+      <el-popconfirm
+        title="确定删除？"
+        @onConfirm="handleSelectionDelete"
+      >
+        <el-popconfirm
+          title="确定删除？"
+          @onConfirm="handleSelectionDelete"
+        >
+          <el-button slot="reference" style="margin-left: 10px;margin-bottom:20px" type="primary" icon="el-icon-delete-solid" class="el-button--danger">
+            删除
+          </el-button>
+        </el-popconfirm>
+      </el-popconfirm>
     </div>
 
     <el-table
@@ -36,7 +46,7 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户名" width="200px" align="center">
+      <el-table-column label="用户名" width="300px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.username }}</span>
         </template>
@@ -46,7 +56,7 @@
           <span>{{ row.role_type === 1 ? '管理员' : '普通角色' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注信息" width="300px" align="center">
+      <el-table-column label="备注信息" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
         </template>
@@ -372,7 +382,7 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
-    },
+    }
   }
 }
 </script>

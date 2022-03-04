@@ -12,9 +12,19 @@
       <el-button class="filter-item el-button--success" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         新增
       </el-button>
-      <el-button style="margin-bottom:20px" type="primary" icon="el-icon-delete-solid" class="el-button--danger" @click="handleSelectionDelete">
-        删除
-      </el-button>
+      <el-popconfirm
+        title="确定删除？"
+        @onConfirm="handleSelectionDelete"
+      >
+        <el-popconfirm
+          title="确定删除？"
+          @onConfirm="handleSelectionDelete"
+        >
+          <el-button slot="reference" style="margin-left: 10px;margin-bottom:20px" type="primary" icon="el-icon-delete-solid" class="el-button--danger">
+            删除
+          </el-button>
+        </el-popconfirm>
+      </el-popconfirm>
     </div>
 
     <el-table
