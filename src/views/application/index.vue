@@ -44,7 +44,7 @@
           <p style="margin: 5px">
             <span class="application-info-code" @click="jumpTask(row)">{{ row.app_code }}</span>
             <el-tooltip class="item" effect="dark" content="点击复制应用编码" placement="right">
-              <i class="el-icon-copy-document copy-app-code" />
+              <i class="el-icon-copy-document copy-app-code" @click="doCopy(row)" />
             </el-tooltip>
           </p>
           <span class="application-info-name">{{ row.app_name }}</span>
@@ -373,6 +373,24 @@ export default {
           app_name: row.app_name,
           app_code: row.app_code
         }
+      })
+    },
+    doCopy: function(row) {
+      const that = this
+      this.$copyText(row.app_code).then(function(e) {
+        that.$notify({
+          title: 'Success',
+          message: '已成功复制至粘贴板',
+          type: 'success',
+          duration: 2000
+        })
+      }, function(e) {
+        that.$notify({
+          title: 'Error',
+          message: '复制失败，请手动复制',
+          type: 'error',
+          duration: 2000
+        })
       })
     },
     getSortClass: function(key) {
