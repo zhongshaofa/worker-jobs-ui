@@ -150,7 +150,7 @@
       <el-form ref="dataAuthApplicationForm" :rules="rules" :model="tempResetPassword" label-position="left" label-width="70px" style="width: 90%; margin-left:30px;">
 
         <el-form-item label="应用列表">
-          <el-select v-model="tempAuthApplication.application_ids" style="width:100%" multiple placeholder="请选择应用">
+          <el-select v-model="tempAuthApplication.application_ids" style="width:100%" multiple filterable placeholder="请选择应用">
             <el-option
               v-for="item in selectApplicationList"
               :key="item.id"
