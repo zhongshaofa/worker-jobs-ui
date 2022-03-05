@@ -98,7 +98,7 @@
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 90%; margin-left:50px;">
 
         <el-form-item label="用户名称">
-          <el-input v-model="temp.username" placeholder="请输入 用户名称" />
+          <el-input v-model="temp.username" :disabled="dialogStatus!=='create'" placeholder="请输入 用户名称" />
         </el-form-item>
         <el-form-item v-if="dialogStatus==='create'" label="用户密码">
           <el-input v-model="temp.password" placeholder="请输入 用户密码" />
