@@ -55,3 +55,19 @@ export function resetPassword(data) {
     data
   })
 }
+
+export function getAuthApplication(params) {
+  return request({
+    url: '/backend/user/application/list',
+    method: 'get',
+    params
+  })
+}
+
+export function authApplication(data) {
+  return request({
+    url: '/backend/user/application/auth',
+    method: 'post',
+    data
+  })
+}

@@ -63,7 +63,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" width="200px" align="center">
+      <el-table-column label="更新时间" align="center">
         <template slot-scope="{row}">
           <span>{{ row.updated_at }}</span>
         </template>
@@ -83,6 +83,9 @@
           </el-button>
           <el-button size="mini" type="info" @click="handleResetPassword(row)">
             重置密码
+          </el-button>
+          <el-button size="mini" type="primary" @click="handleAuthApplication(row)">
+            授权
           </el-button>
         </template>
       </el-table-column>
@@ -143,11 +146,46 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="应用授权" :visible.sync="dialogAuthApplicationVisible" width="800px">
+      <el-form ref="dataAuthApplicationForm" :rules="rules" :model="tempResetPassword" label-position="left" label-width="70px" style="width: 90%; margin-left:30px;">
+
+        <el-form-item label="应用列表">
+          <el-select v-model="tempAuthApplication.application_ids" style="width:100%" multiple placeholder="请选择应用">
+            <el-option
+              v-for="item in selectApplicationList"
+              :key="item.id"
+              :label="item.app_code"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAuthApplicationVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="authApplicationData()">
+          保存
+        </el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import {getList, add, edit, switchStatus, toDelete, resetPassword} from '@/api/user'
+import {
+  getList,
+  add,
+  edit,
+  switchStatus,
+  toDelete,
+  resetPassword,
+  authApplication,
+  getAuthApplication
+} from '@/api/user'
+import { getList as getApplicationList } from '@/api/application'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -197,11 +235,15 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        app_id: 1,
         username: undefined,
         role_type: undefined,
         status: undefined
       },
+      listQueryByApplication: {
+        page: 1,
+        limit: 100000
+      },
+      selectApplicationList: [],
       multipleSelection: [],
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
@@ -224,8 +266,13 @@ export default {
         password: '',
         again_password: ''
       },
+      tempAuthApplication: {
+        id: undefined,
+        application_ids: []
+      },
       dialogFormVisible: false,
       dialogResetPasswordVisible: false,
+      dialogAuthApplicationVisible: false,
       dialogStatus: '',
       textMap: {
         update: '编辑',
@@ -242,20 +289,22 @@ export default {
   },
   created() {
     this.getList()
+    this.initSelectApplicationList()
   },
   methods: {
     getList() {
       getList(this.listQuery).then(response => {
-        console.log(response.data.list)
         this.list = response.data.list
         this.total = response.data.count
-
-        console.log(this)
-
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
+      })
+    },
+    initSelectApplicationList() {
+      getApplicationList(this.listQueryByApplication).then(response => {
+        this.selectApplicationList = response.data.list
       })
     },
     handleFilter() {
@@ -340,6 +389,22 @@ export default {
         }
       })
     },
+    authApplicationData() {
+      this.$refs['dataAuthApplicationForm'].validate((valid) => {
+        if (valid) {
+          authApplication(this.tempAuthApplication).then(() => {
+            this.dialogAuthApplicationVisible = false
+            this.tempAuthApplication.application_ids = []
+            this.$notify({
+              title: 'Success',
+              message: 'Auth Application Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.temp.timestamp = new Date(this.temp.timestamp)
@@ -354,6 +419,25 @@ export default {
       this.dialogResetPasswordVisible = true
       this.$nextTick(() => {
         this.$refs['dataResetPasswordForm'].clearValidate()
+      })
+    },
+    handleAuthApplication(row) {
+      this.tempAuthApplication.id = row.id // copy obj
+      this.dialogAuthApplicationVisible = true
+      this.tempAuthApplication.application_ids = []
+      // 初始化已授权的应用
+      getAuthApplication({ id: row.id }).then(response => {
+        const that = this
+        const list = response.data.list
+        if (list.length > 0) {
+          list.forEach((item, index) => {
+            that.tempAuthApplication.application_ids.push(item.app_id)
+          })
+        }
+      })
+
+      this.$nextTick(() => {
+        this.$refs['dataAuthApplicationForm'].clearValidate()
       })
     },
     updateData() {
