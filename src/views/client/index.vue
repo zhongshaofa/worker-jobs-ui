@@ -42,14 +42,15 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="client名称" width="150px" align="center">
+      <el-table-column label="client信息" width="250px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.client_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="client编码" width="120px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.client_code }}</span>
+          <p style="margin: 5px">
+            <span class="client-info-code" >{{ row.client_code }}</span>
+            <el-tooltip class="item" effect="dark" content="点击复制client编码" placement="right">
+              <i class="el-icon-copy-document copy-client-code" @click="doCopy(row)" />
+            </el-tooltip>
+          </p>
+          <span class="client-info-name">{{ row.client_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="IP" width="150px" align="center">
@@ -62,11 +63,6 @@
           <span>{{ row.port }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="检测时间" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.check_heartbeat_at }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="是否健康" class-name="status-col" width="100px" align="center">
         <template slot-scope="{row}">
           <el-tag :type="row.is_heartbeat | statusFilter">
@@ -74,31 +70,32 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="空闲CPU" width="100px" align="center">
+      <el-table-column label="最新检测时间" width="220px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.cpu_percent }}</span>
+          <span>{{ row.check_heartbeat_at }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="空闲内存" width="100px" align="center">
+      <el-table-column label="系统信息" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.memory_percent }}</span>
+          空闲CPU：<span>{{ row.cpu_percent }}%</span><br>
+          空闲内存：<span>{{ row.memory_percent }}%</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" width="100px" align="center">
+      <el-table-column label="状态" class-name="status-col" width="80px" align="center">
         <template slot-scope="{row}">
           <el-tag :type="row.status | statusFilter">
             {{ row.status === 1 ? '启用' : '禁用' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" width="200px" align="center">
+      <el-table-column label="更新时间" align="center">
         <template slot-scope="{row}">
           <span>{{ row.updated_at }}</span>
         </template>
       </el-table-column>
 
       // 操作栏目
-      <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
@@ -109,14 +106,6 @@
           <el-button v-if="row.status!==2" size="mini" @click="handleModifyStatus(row,2)">
             禁用
           </el-button>
-          <el-popconfirm
-            title="确定删除？"
-            @onConfirm="handleDelete(row,$index)"
-          >
-            <el-button slot="reference" size="mini" type="danger">
-              删除
-            </el-button>
-          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -125,12 +114,11 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="50%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 90%; margin-left:50px;">
-
-        <el-form-item label="client名称">
-          <el-input v-model="temp.client_name" placeholder="请输入 client名称" />
-        </el-form-item>
         <el-form-item label="client编码">
           <el-input v-model="temp.client_code" placeholder="请输入 client编码" />
+        </el-form-item>
+        <el-form-item label="client名称">
+          <el-input v-model="temp.client_name" placeholder="请输入 client名称" />
         </el-form-item>
         <el-form-item label="IP地址">
           <el-input v-model="temp.ip" placeholder="请输入 client名称" />
@@ -409,6 +397,24 @@ export default {
         }
       }))
     },
+    doCopy: function(row) {
+      const that = this
+      this.$copyText(row.client_code).then(function(e) {
+        that.$notify({
+          title: 'Success',
+          message: '已成功复制至粘贴板',
+          type: 'success',
+          duration: 2000
+        })
+      }, function(e) {
+        that.$notify({
+          title: 'Error',
+          message: '复制失败，请手动复制',
+          type: 'error',
+          duration: 2000
+        })
+      })
+    },
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
@@ -416,3 +422,17 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.client-info-code{
+  font-size: 20px;
+  color: #af70b7;
+  margin: 5px;
+}
+.client-info-name{
+  color: #8b9cad;
+}
+.copy-client-code{
+  color: #9cabc1;
+}
+</style>
