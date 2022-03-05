@@ -115,7 +115,7 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="50%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 90%; margin-left:50px;">
         <el-form-item label="client编码">
-          <el-input v-model="temp.client_code" placeholder="请输入 client编码" />
+          <el-input v-model="temp.client_code" placeholder="请输入 client编码" :disabled="dialogStatus!=='create'" />
         </el-form-item>
         <el-form-item label="client名称">
           <el-input v-model="temp.client_name" placeholder="请输入 client名称" />

@@ -46,7 +46,7 @@
           <span>{{ row.task_schedule.schedule_time }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="调度状态" class-name="status-col" width="100px" align="center">
+      <el-table-column label="调度状态" class-name="status-col" width="150px" align="center">
         <template slot-scope="{row}">
           <el-tag :type="row.task_schedule.schedule_status | statusFilter">
             {{ getStatusTitle(row.task_schedule.schedule_status) }}
@@ -60,7 +60,7 @@
       </el-table-column>
 
       // 操作栏目
-      <el-table-column label="操作" align="center" width="100px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
