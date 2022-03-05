@@ -48,7 +48,8 @@
       </el-table-column>
       <el-table-column label="角色类型" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.role_type === 1 ? '管理员' : '普通角色' }}</span>
+          <el-tag v-if="row.role_type === 1">管理角色</el-tag>
+          <el-tag v-if="row.role_type !== 1" type="info">普通角色</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="备注信息" align="center">
@@ -248,7 +249,7 @@ export default {
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      roleTypeSelectList: [{ label: '管理员', key: 1 }, { label: '普通角色', key: 2 }],
+      roleTypeSelectList: [{ label: '管理角色', key: 1 }, { label: '普通角色', key: 2 }],
       statusSelectList: [{ label: '启用', key: 1 }, { label: '禁用', key: 2 }],
       modeSelectList: [{ label: '守护进程', key: 1 }, { label: '定时执行', key: 2 }],
       scheduleTypeSelectList: [{ label: '单机运行', key: 1 }, { label: '空闲执行', key: 2 }, { label: '分布式', key: 3 }],
