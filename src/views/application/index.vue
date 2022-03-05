@@ -41,7 +41,12 @@
       </el-table-column>
       <el-table-column label="应用名称" width="300px" align="center">
         <template slot-scope="{row}">
-          <p class="application-info-code" @click="jumpTask(row)">{{ row.app_code }}</p>
+          <p style="margin: 5px">
+            <span class="application-info-code" @click="jumpTask(row)">{{ row.app_code }}</span>
+            <el-tooltip class="item" effect="dark" content="点击复制应用编码" placement="right">
+              <i class="el-icon-copy-document copy-app-code" />
+            </el-tooltip>
+          </p>
           <span class="application-info-name">{{ row.app_name }}</span>
         </template>
       </el-table-column>
@@ -386,5 +391,8 @@ export default {
 }
 .application-info-name{
   color: #8b9cad;
+}
+.copy-app-code{
+  color: #9cabc1;
 }
 </style>
