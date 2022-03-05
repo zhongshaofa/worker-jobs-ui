@@ -80,8 +80,8 @@
           <el-button v-if="row.status!==2" size="mini" @click="handleModifyStatus(row,2)">
             禁用
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
+          <el-button size="mini" type="primary" @click="handleAuthClient(row)">
+            绑定client
           </el-button>
         </template>
       </el-table-column>
@@ -119,6 +119,31 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="client授权" :visible.sync="dialogAuthClientVisible" width="800px">
+      <el-form ref="dataAuthClientForm" :rules="rules" :model="tempAuthClient" label-position="left" label-width="100px" style="width: 90%; margin-left:30px;">
+
+        <el-form-item label="client列表">
+          <el-select v-model="tempAuthClient.client_ids" style="width:100%" multiple filterable placeholder="请选择应用">
+            <el-option
+              v-for="item in selectClientList"
+              :key="item.id"
+              :label="item.client_code"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAuthClientVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="authClientData()">
+          保存
+        </el-button>
+      </div>
+    </el-dialog>
+
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
         <el-table-column prop="key" label="Channel" />
@@ -132,10 +157,11 @@
 </template>
 
 <script>
-import { getList, add, edit, switchStatus, toDelete } from '@/api/application'
+import { getList, add, edit, switchStatus, toDelete, clientAuth, getClientList } from '@/api/application'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import { getList as getSelectClientList } from '@/api/client' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -180,11 +206,16 @@ export default {
         app_code: undefined,
         status: undefined
       },
+      listQueryByClient: {
+        page: 1,
+        limit: 100000
+      },
       importanceOptions: [1, 2, 3],
       multipleSelection: [],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusSelectList: [{ label: '启用', key: 1 }, { label: '禁用', key: 2 }],
+      selectClientList: [],
       showReviewer: false,
       temp: {
         id: undefined,
@@ -194,7 +225,12 @@ export default {
         introduction: '',
         status: 1
       },
+      tempAuthClient: {
+        id: undefined,
+        client_ids: []
+      },
       dialogFormVisible: false,
+      dialogAuthClientVisible: false,
       dialogStatus: '',
       textMap: {
         update: '编辑',
@@ -213,6 +249,7 @@ export default {
   },
   created() {
     this.getList()
+    this.initSelectClientList()
   },
   methods: {
     getList() {
@@ -229,9 +266,33 @@ export default {
         }, 1.5 * 1000)
       })
     },
+    initSelectClientList() {
+      getSelectClientList(this.listQueryByClient).then(response => {
+        this.selectClientList = response.data.list
+      })
+    },
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
+    },
+    handleAuthClient(row) {
+      this.tempAuthClient.id = row.id // copy obj
+      this.dialogAuthClientVisible = true
+      this.tempAuthClient.client_ids = []
+      // 初始化已授权的应用
+      getClientList({ id: row.id }).then(response => {
+        const that = this
+        const list = response.data.list
+        if (list.length > 0) {
+          list.forEach((item, index) => {
+            that.tempAuthClient.client_ids.push(item.client_id)
+          })
+        }
+      })
+
+      this.$nextTick(() => {
+        this.$refs['dataAuthClientForm'].clearValidate()
+      })
     },
     handleModifyStatus(row, status) {
       switchStatus({ ids: [row.id], status: status }).then(() => {
@@ -391,6 +452,22 @@ export default {
           type: 'error',
           duration: 2000
         })
+      })
+    },
+    authClientData() {
+      this.$refs['dataAuthClientForm'].validate((valid) => {
+        if (valid) {
+          clientAuth(this.tempAuthClient).then(() => {
+            this.dialogAuthClientVisible = false
+            this.tempAuthClient.client_ids = []
+            this.$notify({
+              title: 'Success',
+              message: 'Bind Client Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
       })
     },
     getSortClass: function(key) {

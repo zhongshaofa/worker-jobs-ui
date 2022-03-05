@@ -147,7 +147,7 @@
     </el-dialog>
 
     <el-dialog title="应用授权" :visible.sync="dialogAuthApplicationVisible" width="800px">
-      <el-form ref="dataAuthApplicationForm" :rules="rules" :model="tempResetPassword" label-position="left" label-width="70px" style="width: 90%; margin-left:30px;">
+      <el-form ref="dataAuthApplicationForm" :rules="rules" :model="tempAuthApplication" label-position="left" label-width="70px" style="width: 90%; margin-left:30px;">
 
         <el-form-item label="应用列表">
           <el-select v-model="tempAuthApplication.application_ids" style="width:100%" multiple filterable placeholder="请选择应用">

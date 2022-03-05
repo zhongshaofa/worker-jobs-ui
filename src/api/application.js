@@ -48,11 +48,11 @@ export function switchStatus(data) {
   })
 }
 
-export function clientAuth(params) {
+export function clientAuth(data) {
   return request({
     url: '/backend/application/client/auth',
     method: 'post',
-    params
+    data
   })
 }
 
