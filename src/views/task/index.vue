@@ -52,7 +52,8 @@
       </el-table-column>
       <el-table-column label="任务类型" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mode === 1 ? '守护进程' : '定时执行' }}</span>
+          <el-tag v-if="row.mode === 1">守护进程</el-tag>
+          <el-tag v-if="row.mode !== 1" type="info">定时执行</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="cron表达式" width="300px" align="center">
@@ -483,6 +484,6 @@ export default {
 <style>
 .task-info{
   font-size: 15px;
-  color: #3f9eff;
+  color: #af70b7;
 }
 </style>
