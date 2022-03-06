@@ -28,42 +28,51 @@
     >
       <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
-          <span>{{ row.task_schedule.id }}</span>
+          <span>{{ row.id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="任务ID" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.task_schedule.task_id }}</span>
+          <span>{{ row.task_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="调度client数量" width="200px" align="center">
+      <el-table-column label="调度ID" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.client_list.length }}</span>
+          <span>{{ row.schedule_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="调度时间" align="center">
+      <el-table-column label="clientID" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.task_schedule.schedule_time }}</span>
+          <span>{{ row.client_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="调度状态" class-name="status-col" width="150px" align="center">
+      <el-table-column label="client信息" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.task_schedule.schedule_status | statusFilter">
-            {{ getStatusTitle(row.task_schedule.schedule_status) }}
-          </el-tag>
+          <p style="margin: 5px">
+            <span class="client-info-code" >{{ row.client.client_code }}</span>
+            <el-tooltip class="item" effect="dark" content="点击复制client编码" placement="right">
+              <i class="el-icon-copy-document copy-client-code" @click="doCopy(row)" />
+            </el-tooltip>
+          </p>
+          <span class="client-info-name">{{ row.client.client_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="日志目录" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.log_path }}</span>
         </template>
       </el-table-column>
       <el-table-column label="更新时间" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.task_schedule.updated_at }}</span>
+          <span>{{ row.updated_at }}</span>
         </template>
       </el-table-column>
 
       // 操作栏目
       <el-table-column label="操作" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="jumpLog(row)">
-            日志列表
+          <el-button type="primary" size="mini" @click="showConsoleLog(row)">
+            查看Console日志
           </el-button>
         </template>
       </el-table-column>
@@ -71,15 +80,20 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="50%">
-      45252
+    <el-dialog title="Console日志" :visible.sync="dialogConsoleVisible" fullscreen>
+      <el-input v-model="temp.console_log" rows="35" type="textarea" placeholder="暂无日志信息" />
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogConsoleVisible = false">
+          关闭
+        </el-button>
+      </div>
     </el-dialog>
 
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/scheduler'
+import { getList, readConsoleLog } from '@/api/scheduler_log'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -107,6 +121,7 @@ export default {
   },
   data() {
     return {
+      intervalId: null,
       tableKey: 0,
       list: null,
       total: 0,
@@ -115,7 +130,13 @@ export default {
         page: 1,
         limit: 20,
         task_id: undefined,
-        scheduler_status: undefined
+        client_id: undefined,
+        schedule_id: undefined
+      },
+      readLogQuery: {
+        id: undefined,
+        limit: 500,
+        start_line: 0
       },
       task_name: undefined,
       app_id: undefined,
@@ -133,14 +154,9 @@ export default {
       ],
       showReviewer: false,
       temp: {
-        id: undefined,
-        username: '',
-        password: '',
-        role_type: 2,
-        status: 1,
-        remark: ''
+        console_log: ''
       },
-      dialogFormVisible: false,
+      dialogConsoleVisible: false,
       dialogStatus: '',
       textMap: {
         update: '编辑',
@@ -158,10 +174,7 @@ export default {
   created() {
     if (this.$route.query.task_id !== undefined) {
       this.listQuery.task_id = parseInt(this.$route.query.task_id)
-      this.task_name = this.$route.query.task_name
-      this.app_id = parseInt(this.$route.query.app_id)
-      this.app_name = this.$route.query.app_name
-      this.app_code = this.$route.query.app_code
+      this.listQuery.schedule_id = parseInt(this.$route.query.schedule_id)
     }
     this.getList()
   },
@@ -217,21 +230,41 @@ export default {
         remark: ''
       }
     },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+    showConsoleLog(row) {
+      this.dialogConsoleVisible = true
+      this.readLogQuery.id = row.id
+      this.readLogQuery.start_line = 0
+      this.temp.console_log = ''
+      this.getConsoleLog()
+      this.refreshConsoleLog()
+    },
+    getConsoleLog() {
+      readConsoleLog(this.readLogQuery).then(response => {
+        const content = response.data.content
+        // eslint-disable-next-line no-empty
+        if (content.length > 0) {
+          content.forEach((item, index) => {
+            this.temp.console_log = this.temp.console_log + item + '\n'
+          })
+        }
+        this.readLogQuery.start_line = response.data.end_line + 1
       })
     },
-    jumpLog(row) {
-      this.$router.push({
-        path: '/schedulerLogList', query: {
-          task_id: row.task_schedule.task_id,
-          schedule_id: row.task_schedule.id
+    refreshConsoleLog() {
+      if (this.intervalId != null) {
+        return
+      }
+      this.intervalId = setInterval(() => {
+        if (this.dialogConsoleVisible === false) {
+          this.clearRefreshConsoleLog()
+        } else {
+          this.getConsoleLog()
         }
-      })
+      }, 2000)
+    },
+    clearRefreshConsoleLog() {
+      clearInterval(this.intervalId)
+      this.intervalId = null
     },
     handleSelectionChange(val) {
       this.multipleSelection = val

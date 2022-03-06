@@ -96,6 +96,19 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
+    redirect: '/scheduler_log/index',
+    hidden: true,
+    children: [{
+      path: 'schedulerLogList',
+      name: 'Dashboard',
+      component: () => import('@/views/scheduler_log/index'),
+      meta: { title: '应用管理 / 任务管理 / 调度列表 / 日志列表', icon: 'nested' }
+    }]
+  },
+
+  {
+    path: '/',
+    component: Layout,
     redirect: '/client/index',
     children: [{
       path: 'clientList',
