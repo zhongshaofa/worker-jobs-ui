@@ -83,9 +83,9 @@
     <el-dialog title="Console日志" :visible.sync="dialogConsoleVisible" fullscreen>
       <el-input v-model="temp.console_log" rows="35" type="textarea" placeholder="暂无日志信息" />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogConsoleVisible = false">
-          关闭
-        </el-button>
+        <el-row class="el-dialog--center">
+          <el-button @click="dialogConsoleVisible = false">关闭</el-button>
+        </el-row>
       </div>
     </el-dialog>
 

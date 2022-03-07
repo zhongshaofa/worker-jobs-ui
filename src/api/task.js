@@ -47,3 +47,11 @@ export function switchStatus(data) {
     data
   })
 }
+
+export function getExecTimeList(params) {
+  return request({
+    url: '/backend/task/exec_time/list',
+    method: 'get',
+    params
+  })
+}

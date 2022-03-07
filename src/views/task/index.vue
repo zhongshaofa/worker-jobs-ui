@@ -73,14 +73,14 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" width="200px" align="center">
+      <el-table-column label="更新时间" align="center">
         <template slot-scope="{row}">
           <span>{{ row.updated_at }}</span>
         </template>
       </el-table-column>
 
       // 操作栏目
-      <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="350px" class-name="small-padding fixed-width">
         <template slot-scope="{row, $index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
@@ -90,6 +90,9 @@
           </el-button>
           <el-button v-if="row.status!==2" size="mini" type="warning" @click="handleModifyStatus(row,2)">
             禁用
+          </el-button>
+          <el-button :disabled="row.mode!==2" size="mini" @click="handleExecTimeLIst(row)">
+            执行时间
           </el-button>
           <el-button size="mini" @click="jumpScheduler(row)">
             调度列表
@@ -171,20 +174,24 @@
       <vcrontab :expression="expression" @hide="showCron=false" @fill="crontabFill" />
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
+    <el-dialog :visible.sync="dialogExecTimeList" title="执行时间" width="500px">
+      <div>
+        <ul class="infinite-list" style="height: 450px">
+          <li v-for="data in exec_time_list" class="infinite-list-item">{{ data }}</li>
+        </ul>
+      </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
+        <el-row class="el-dialog--center">
+          <el-button @click="dialogExecTimeList = false">关闭</el-button>
+        </el-row>
       </span>
     </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { getList, add, edit, switchStatus, toDelete } from '@/api/task'
+import { getList, add, edit, switchStatus, toDelete, getExecTimeList } from '@/api/task'
 import { detail as getApplicationDetail } from '@/api/application'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -275,12 +282,13 @@ export default {
         update: '编辑',
         create: '新增'
       },
-      dialogPvVisible: false,
+      dialogExecTimeList: false,
       pvData: [],
       rules: {
         name: [{ required: true, message: '名称 必须', trigger: 'blur' }],
         mode: [{ required: true, message: '任务类型 必须', trigger: 'blur' }]
       },
+      exec_time_list: [],
       downloadLoading: false
     }
   },
@@ -319,6 +327,12 @@ export default {
           type: 'success'
         })
         row.status = status
+      })
+    },
+    handleExecTimeLIst(row) {
+      this.dialogExecTimeList = true
+      getExecTimeList({ id: row.id }).then(response => {
+        this.exec_time_list = response.data
       })
     },
     sortChange(data) {
@@ -487,5 +501,20 @@ export default {
 .task-info{
   font-size: 15px;
   color: #af70b7;
+}
+.infinite-list {
+  height: 300px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.infinite-list .infinite-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  background: #eef4fb;
+  margin: 5px;
+  color: #479ff7;
 }
 </style>
