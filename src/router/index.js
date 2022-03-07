@@ -56,77 +56,77 @@ export const constantRoutes = [
   },
 
   {
-    path: '/',
+    path: '/application',
     component: Layout,
     redirect: '/application/index',
     children: [{
       path: 'applicationList',
-      name: 'Dashboard',
+      name: '应用管理',
       component: () => import('@/views/application/index'),
-      meta: { title: '应用管理', icon: 'table' }
+      meta: { title: '应用管理', icon: 'el-icon-s-order' }
     }]
   },
 
   {
-    path: '/',
+    path: '/task',
     component: Layout,
     redirect: '/task/index',
     hidden: true,
     children: [{
       path: 'taskList',
-      name: 'Dashboard',
+      name: '任务管理',
       component: () => import('@/views/task/index'),
       meta: { title: '应用管理 / 任务管理', icon: 'nested' }
     }]
   },
 
   {
-    path: '/',
+    path: '/scheduler',
     component: Layout,
     redirect: '/scheduler/index',
     hidden: true,
     children: [{
       path: 'schedulerList',
-      name: 'Dashboard',
+      name: '任务管理',
       component: () => import('@/views/scheduler/index'),
       meta: { title: '应用管理 / 任务管理 / 调度列表', icon: 'nested' }
     }]
   },
 
   {
-    path: '/',
+    path: '/schedulerLog',
     component: Layout,
-    redirect: '/scheduler_log/index',
+    redirect: '/schedulerLog/index',
     hidden: true,
     children: [{
       path: 'schedulerLogList',
-      name: 'Dashboard',
+      name: '日志列表',
       component: () => import('@/views/scheduler_log/index'),
       meta: { title: '应用管理 / 任务管理 / 调度列表 / 日志列表', icon: 'nested' }
     }]
   },
 
   {
-    path: '/',
+    path: '/client',
     component: Layout,
     redirect: '/client/index',
     children: [{
       path: 'clientList',
-      name: 'Dashboard',
+      name: 'client管理',
       component: () => import('@/views/client/index'),
-      meta: { title: 'client管理', icon: 'nested' }
+      meta: { title: 'client管理', icon: 'el-icon-s-platform\n' }
     }]
   },
 
   {
-    path: '/',
+    path: '/user',
     component: Layout,
     redirect: '/user/index',
     children: [{
       path: 'userList',
-      name: 'Dashboard',
+      name: '用户管理',
       component: () => import('@/views/user/index'),
-      meta: { title: '用户管理', icon: 'nested' }
+      meta: { title: '用户管理', icon: 'el-icon-user-solid' }
     }]
   },
 

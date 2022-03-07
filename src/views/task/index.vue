@@ -4,7 +4,7 @@
       <div class="el-page-header__left" @click="goBack"><i class="el-icon-back" />
         <div class="el-page-header__title"><el-tag type="info" class="back-tag">返回</el-tag></div>
       </div>
-      <div class="el-page-header__content"><el-tag>{{ app_code }} / {{ app_name }}</el-tag></div>
+      <div class="el-page-header__content"><el-tag>{{ nav_info.app_code }} / {{ nav_info.app_name }}</el-tag></div>
     </div>
     <div class="filter-container">
       <el-input v-model="listQuery.name" placeholder="请输入任务名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
@@ -185,6 +185,7 @@
 
 <script>
 import { getList, add, edit, switchStatus, toDelete } from '@/api/task'
+import { detail as getApplicationDetail } from '@/api/application'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -234,8 +235,11 @@ export default {
       list: null,
       total: 0,
       listLoading: false,
-      app_code: undefined,
-      app_name: undefined,
+      nav_info: {
+        app_code: undefined,
+        app_name: undefined,
+        introduction: undefined
+      },
       listQuery: {
         page: 1,
         limit: 20,
@@ -283,24 +287,25 @@ export default {
   created() {
     if (this.$route.query.app_id !== undefined) {
       this.listQuery.app_id = parseInt(this.$route.query.app_id)
-      this.app_name = this.$route.query.app_name
-      this.app_code = this.$route.query.app_code
     }
     this.getList()
+    this.initNavInfo()
   },
   methods: {
     getList() {
       getList(this.listQuery).then(response => {
-        console.log(response.data.list)
         this.list = response.data.list
         this.total = response.data.count
-
-        console.log(this)
-
-        // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
+      })
+    },
+    initNavInfo() {
+      getApplicationDetail({ id: this.listQuery.app_id }).then(response => {
+        this.nav_info.app_name = response.data.app_name
+        this.nav_info.app_code = response.data.app_code
+        this.nav_info.introduction = response.data.introduction
       })
     },
     handleFilter() {
@@ -460,16 +465,13 @@ export default {
       this.temp.cron_formula = value
     },
     goBack() {
-      this.$router.push({ path: '/applicationList' })
+      this.$router.push({ path: '/application/applicationList' })
     },
     jumpScheduler(row) {
       this.$router.push({
-        path: '/schedulerList', query: {
-          task_id: row.id,
-          task_name: row.name,
+        path: '/scheduler/schedulerList', query: {
           app_id: this.listQuery.app_id,
-          app_name: this.app_name,
-          app_code: this.app_code
+          task_id: row.id
         }
       })
     },

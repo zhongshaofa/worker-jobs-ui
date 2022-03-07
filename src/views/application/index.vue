@@ -254,13 +254,8 @@ export default {
   methods: {
     getList() {
       getList(this.listQuery).then(response => {
-        console.log(response.data.list)
         this.list = response.data.list
         this.total = response.data.count
-
-        console.log(this)
-
-        // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
@@ -429,10 +424,8 @@ export default {
     },
     jumpTask(row) {
       this.$router.push({
-        path: '/taskList', query: {
-          app_id: row.id,
-          app_name: row.app_name,
-          app_code: row.app_code
+        path: '/task/taskList', query: {
+          app_id: row.id
         }
       })
     },

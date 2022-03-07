@@ -4,7 +4,7 @@
       <div class="el-page-header__left" @click="goBack"><i class="el-icon-back" />
         <div class="el-page-header__title"><el-tag type="info" class="back-tag">返回</el-tag></div>
       </div>
-      <div class="el-page-header__content"><el-tag style="margin-right: 15px">{{ app_code }} / {{ app_name }}</el-tag>  <el-tag type="success">{{ task_name }}</el-tag></div>
+      <div class="el-page-header__content"><el-tag style="margin-right: 15px">{{ nav_info.app.app_code }} / {{ nav_info.app.app_name }}</el-tag>  <el-tag type="success" style="margin-right: 15px">{{ nav_info.task.task_name }}</el-tag>  <el-tag type="warning">{{ listQuery.schedule_id }}</el-tag></div>
     </div>
     <div class="filter-container">
       <el-select v-model="listQuery.scheduler_status" placeholder="选择状态" clearable style="width: 200px;margin-right: 30px;margin-bottom: 20px" class="filter-item">
@@ -95,7 +95,9 @@
 <script>
 import { getList, readConsoleLog } from '@/api/scheduler_log'
 import waves from '@/directive/waves' // waves directive
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import { detail as getApplicationDetail } from '@/api/application'
+import { detail as getTaskDetail } from '@/api/task'
 
 export default {
   name: 'ComplexTable',
@@ -132,6 +134,17 @@ export default {
         task_id: undefined,
         client_id: undefined,
         schedule_id: undefined
+      },
+      nav_info: {
+        task: {
+          task_name: undefined
+        },
+        app: {
+          app_id: undefined,
+          app_name: undefined,
+          app_code: undefined,
+          introduction: undefined
+        }
       },
       readLogQuery: {
         id: undefined,
@@ -172,39 +185,41 @@ export default {
     }
   },
   created() {
-    if (this.$route.query.task_id !== undefined) {
-      this.listQuery.task_id = parseInt(this.$route.query.task_id)
+    if (this.$route.query.schedule_id !== undefined) {
       this.listQuery.schedule_id = parseInt(this.$route.query.schedule_id)
     }
+    if (this.$route.query.task_id !== undefined) {
+      this.listQuery.task_id = parseInt(this.$route.query.task_id)
+    }
+    if (this.$route.query.app_id !== undefined) {
+      this.nav_info.app.app_id = parseInt(this.$route.query.app_id)
+    }
     this.getList()
+    this.initNavInfo()
   },
   methods: {
     getList() {
       getList(this.listQuery).then(response => {
-        console.log(response.data.list)
         this.list = response.data.list
         this.total = response.data.count
-
-        console.log(this)
-
-        // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
       })
     },
+    initNavInfo() {
+      getApplicationDetail({ id: this.nav_info.app.app_id }).then(response => {
+        this.nav_info.app.app_name = response.data.app_name
+        this.nav_info.app.app_code = response.data.app_code
+        this.nav_info.app.introduction = response.data.introduction
+      })
+      getTaskDetail({ id: this.listQuery.task_id }).then(response => {
+        this.nav_info.task.task_name = response.data.name
+      })
+    },
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
-    },
-    handleModifyStatus(row, status) {
-      switchStatus({ ids: [row.id], status: status }).then(() => {
-        this.$message({
-          message: '操作Success',
-          type: 'success'
-        })
-        row.status = status
-      })
     },
     sortChange(data) {
       const { prop, order } = data
@@ -281,10 +296,9 @@ export default {
     },
     goBack() {
       this.$router.push({
-        path: '/taskList', query: {
-          app_id: this.app_id,
-          app_name: this.app_name,
-          app_code: this.app_code
+        path: '/scheduler/schedulerList', query: {
+          app_id: this.nav_info.app.app_id,
+          task_id: this.listQuery.task_id
         }
       })
     },
