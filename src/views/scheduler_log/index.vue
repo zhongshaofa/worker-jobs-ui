@@ -4,7 +4,7 @@
       <div class="el-page-header__left" @click="goBack"><i class="el-icon-back" />
         <div class="el-page-header__title"><el-tag type="info" class="back-tag">返回</el-tag></div>
       </div>
-      <div class="el-page-header__content"><el-tag style="margin-right: 15px">{{ nav_info.app.app_code }} / {{ nav_info.app.app_name }}</el-tag>  <el-tag type="success" style="margin-right: 15px">{{ nav_info.task.task_name }}</el-tag>  <el-tag type="warning">{{ listQuery.schedule_id }}</el-tag></div>
+      <div class="el-page-header__content"><el-tag style="margin-right: 15px">{{ nav_info.app.app_code }} / {{ nav_info.app.app_name }}</el-tag>  <el-tag type="success" style="margin-right: 15px">{{ nav_info.task.task_name }} / {{ listQuery.task_id }}</el-tag>  <el-tag type="warning">调度ID：{{ listQuery.schedule_id }}</el-tag></div>
     </div>
     <div class="filter-container">
       <el-select v-model="listQuery.scheduler_status" placeholder="选择状态" clearable style="width: 200px;margin-right: 30px;margin-bottom: 20px" class="filter-item">

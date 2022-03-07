@@ -4,7 +4,7 @@
       <div class="el-page-header__left" @click="goBack"><i class="el-icon-back" />
         <div class="el-page-header__title"><el-tag type="info" class="back-tag">返回</el-tag></div>
       </div>
-      <div class="el-page-header__content"><el-tag style="margin-right: 15px">{{ nav_info.app.app_code }} / {{ nav_info.app.app_name }}</el-tag>  <el-tag type="success">{{ nav_info.task.task_name }}</el-tag></div>
+      <div class="el-page-header__content"><el-tag style="margin-right: 15px">{{ nav_info.app.app_code }} / {{ nav_info.app.app_name }}</el-tag>  <el-tag type="success">{{ nav_info.task.task_name }} / {{ listQuery.task_id }}</el-tag></div>
     </div>
     <div class="filter-container">
       <el-select v-model="listQuery.scheduler_status" placeholder="选择状态" clearable style="width: 200px;margin-right: 30px;margin-bottom: 20px" class="filter-item">
@@ -26,19 +26,19 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <el-table-column label="调度信息" width="200px">
         <template slot-scope="{row}">
-          <span>{{ row.task_schedule.id }}</span>
+          <span @click="jumpLog(row)">
+            调度 ID: <span style="color: #3f9eff">{{ row.task_schedule.id }}</span>
+          </span><br>
+          <span>client数量: {{ row.client_list.length }}</span>
         </template>
       </el-table-column>
       <el-table-column label="任务ID" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.task_schedule.task_id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="调度client数量" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.client_list.length }}</span>
+          <span @click="jumpLog(row)">
+            {{ row.task_schedule.task_id }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column label="调度时间" align="center">
@@ -70,10 +70,6 @@
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="50%">
-      45252
-    </el-dialog>
 
   </div>
 </template>
