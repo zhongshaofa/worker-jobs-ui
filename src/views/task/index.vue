@@ -50,13 +50,13 @@
           <span class="task-info" @click="jumpScheduler(row)">{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="任务类型" width="200px" align="center">
+      <el-table-column label="任务类型" width="150px" align="center">
         <template slot-scope="{row}">
           <el-tag v-if="row.mode === 1">守护进程</el-tag>
           <el-tag v-if="row.mode !== 1" type="info">定时执行</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="cron表达式" width="300px" align="center">
+      <el-table-column label="cron表达式" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cron_formula }}</span>
         </template>
